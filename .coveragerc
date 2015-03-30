@@ -1,0 +1,22 @@
+# This file is part of stateplane.
+# https://github.com/someuser/somepackage
+
+# Licensed under the GPLv3 license:
+# http://www.opensource.org/licenses/GPLv3-license
+# Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
+
+[run]
+omit =
+    *tests.py
+branch = True
+source =
+    stateplane
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    from urllib.parse import parse_qs
+    except ImportError:

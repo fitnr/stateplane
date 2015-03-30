@@ -1,0 +1,21 @@
+# This file is part of stateplane.
+# https://github.com/someuser/somepackage
+
+# Licensed under the GPLv3 license:
+# http://www.opensource.org/licenses/GPLv3-license
+# Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
+
+language: python
+
+python:
+    - "2.7"
+    - "3.4"
+    - "pypy"
+
+install:
+    # install python requirements
+    - make setup
+
+script:
+    # run tests
+    - make test
