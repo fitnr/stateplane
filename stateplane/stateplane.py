@@ -20,11 +20,12 @@ with fiona.open('/stateplane.geojson',
         STATEPLANES.append(f)
 
 
-def select(lon, lat, fmt=None):
+def identify(lon, lat, fmt=None):
     '''Return stateplane for given X, Y coordinates
     Defaults to returning EPSG code. Possible fmt parameters: fips, abbr (e.g. 'NY_LI')
     '''
     target = Point(lon, lat)
+    result = None
 
     for stateplane in STATEPLANES:
         if stateplane['geometry'].contains(target):
@@ -59,39 +60,43 @@ class Stateplane(object):
     def __init__(self):
         self.projections = dict()
 
-    def _convert(self, x, y, inv, epsg=None, fips=None, abbr=None):
+    def _convert(self, x, y, inverse, epsg=None, fips=None, abbr=None):
         '''Conversion helper for state plane conversions'''
-        if not any(fips, epsg, abbr):
-            raise ValueError("Need either a fips, epsg or abbr argument")
+        if inverse and not any((epsg, fips, abbr)):
+            raise ValueError("Inverse calculations require a epsg, fips or abbr argument.")
 
         if fips:
             epsg = data.FIPS_TO_EPSG[fips]
         elif abbr:
             epsg = data.SHORT_TO_EPSG[abbr]
 
-        if not any(inv, epsg):
-            epsg = select(x, y)
+        if not epsg:
+            epsg = identify(x, y)
 
         if epsg not in self.projections:
             self.projections[epsg] = pyproj.Proj(init='EPSG:' + epsg)
 
         projection = self.projections[epsg]
 
-        return projection(x, y, inv=inv)
+        return projection(x, y, inverse=inverse)
 
     def from_latlon(self, lat, lon, epsg=None, fips=None, abbr=None):
-        return self._convert(lon, lat, None, fips, epsg, abbr)
+        return self._convert(lon, lat, None, epsg, fips, abbr)
 
     def from_lonlat(self, lon, lat, epsg=None, fips=None, abbr=None):
         '''Convert from (lon, lat) to local state plane coordinates'''
-        return self._convert(lon, lat, None, fips, epsg, abbr)
+        return self._convert(lon, lat, None, epsg, fips, abbr)
 
     def to_latlon(self, easting, northing, epsg=None, fips=None, abbr=None):
-        lon, lat = self._convert(easting, northing, True, fips, epsg, abbr)
+        if not any((epsg, fips, abbr)):
+            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")            
+        lon, lat = self._convert(easting, northing, True, epsg, fips, abbr)
         return lat, lon
 
     def to_lonlat(self, easting, northing, epsg=None, fips=None, abbr=None):
         '''Return (lon, lat) from a state plane (easting, northing) pair.
         Must pass either a fips code, epsg, or abbr to specify the state plane projection to use
         '''
-        return self._convert(easting, northing, True, fips, epsg, abbr)
+        if not any((epsg, fips, abbr)):
+            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")            
+        return self._convert(easting, northing, True, epsg, fips, abbr)

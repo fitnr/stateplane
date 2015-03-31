@@ -11,7 +11,7 @@ def main():
 
     args = parser.parse_args()
 
-    print(stateplane.select(*args.point, fmt=args.output_type))
+    print(stateplane.find_projection(*args.point, fmt=args.output_type))
 
 if __name__ == '__main__':
     main()
