@@ -8,8 +8,8 @@
 # http://www.opensource.org/licenses/GPLv3-license
 # Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
 
-from unittest import TestCase as PythonTestCase
+import unittest
 
 
-class TestCase(PythonTestCase):
+class TestCase(unittest.TestCase):
     pass

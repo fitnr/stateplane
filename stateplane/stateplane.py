@@ -1,6 +1,7 @@
 import os.path
 import pyproj
 from shapely.geometry.polygon import Polygon
+from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.point import Point
 import fiona
 from . import data
@@ -10,11 +11,16 @@ STATEPLANES = []
 with fiona.open('/stateplane.geojson',
                 vfs='zip://' + os.path.join(os.path.dirname(__file__), 'data/stateplane.zip')) as src:
     for f in src:
-        f['geometry'] = Polygon(f['geometry'])
+        if f['geometry']['type'] == 'MultiPolygon':
+            f['geometry'] = MultiPolygon([Polygon(c[0], c[1:]) for c in f['geometry']['coordinates']])
+
+        elif f['geometry']['type'] == 'Polygon':
+            f['geometry'] = Polygon(f['geometry']['coordinates'][0], f['geometry']['coordinates'][1:])
+
         STATEPLANES.append(f)
 
 
-def get_stateplane(lon, lat, fmt=None):
+def select(lon, lat, fmt=None):
     '''Return stateplane for given X, Y coordinates
     Defaults to returning EPSG code. Possible fmt parameters: fips, abbr (e.g. 'NY_LI')
     '''
@@ -24,16 +30,27 @@ def get_stateplane(lon, lat, fmt=None):
         if stateplane['geometry'].contains(target):
             result = stateplane
             break
+
+    if not result:
+        STATEPLANES.sort(key=lambda x: x['geometry'].distance(target))
+        result = STATEPLANES[0]
+
     try:
         if fmt == 'fips':
             return result['properties']['FIPSZONE83']
-        if fmt == 'short':
+
+        elif fmt == 'short':
             return result['properties']['ZONENAME83']
+
+        elif fmt == 'proj4':
+            return data.EPSG_TO_PROJ4[result['properties']['EPSG']]
+
         else:
             return result['properties']['EPSG']
 
     except NameError:
         pass
+
 
 class Stateplane(object):
 
@@ -53,10 +70,7 @@ class Stateplane(object):
             epsg = data.SHORT_TO_EPSG[abbr]
 
         if not any(inv, epsg):
-            epsg = get_stateplane(x, y)
-
-        if not epsg:
-            raise ValueError('Need a ')
+            epsg = select(x, y)
 
         if epsg not in self.projections:
             self.projections[epsg] = pyproj.Proj(init='EPSG:' + epsg)
@@ -81,4 +95,3 @@ class Stateplane(object):
         Must pass either a fips code, epsg, or abbr to specify the state plane projection to use
         '''
         return self._convert(easting, northing, True, fips, epsg, abbr)
-

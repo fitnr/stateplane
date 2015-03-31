@@ -33,18 +33,17 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'fiona',
-        'shapely',
+        'fiona>=1.4.8,<1.5',
+        'pyproj>=1.9.4,<2',
+        'shapely>=1.5.1,<1.6',
     ],
-    extras_require={
-        'tests': [
-            'coverage',
-            'tox',
-        ],
-    },
+    tests_require=[
+        'coverage',
+        'tox',
+    ],
     entry_points={
         'console_scripts': [
-            # 'stateplane=stateplane.cli:main',
+            'stateplane=stateplane.cli:main',
         ],
     },
     zip_safe=False,
