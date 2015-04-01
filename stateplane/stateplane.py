@@ -1,12 +1,11 @@
 import os.path
 from csv import reader
-from pkg_resources import resource_stream
 import pyproj
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
 from shapely.geometry.point import Point
 import fiona
-from . import data
+from . import dicts
 
 STATEPLANES = []
 
@@ -25,7 +24,7 @@ COFIPS = dict()
 
 def _cofips():
     global COFIPS
-    with resource_stream('stateplane', 'data/countyfp.csv') as rs:
+    with open(os.path.join(os.path.dirname(__file__), 'data/countyfp.csv')) as rs:
         r = reader(rs, delimiter=',')
         next(r)
         COFIPS = {fp: epsg for fp, epsg in r}
@@ -93,7 +92,7 @@ def identify(lon, lat, fmt=None, statefp=None, countyfp=None):
             return result['properties']['ZONENAME83']
 
         elif fmt == 'proj4':
-            return data.EPSG_TO_PROJ4[result['properties']['EPSG']]
+            return dicts.EPSG_TO_PROJ4[result['properties']['EPSG']]
 
         else:
             return result['properties']['EPSG']
@@ -115,9 +114,9 @@ class Stateplane(object):
             raise ValueError("Inverse calculations require a epsg, fips or abbr argument.")
 
         if fips:
-            epsg = data.FIPS_TO_EPSG[fips]
+            epsg = dicts.FIPS_TO_EPSG[fips]
         elif abbr:
-            epsg = data.SHORT_TO_EPSG[abbr]
+            epsg = dicts.SHORT_TO_EPSG[abbr]
 
         if not epsg:
             epsg = identify(x, y, statefp=statefp)
