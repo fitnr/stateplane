@@ -8,8 +8,7 @@ from . import data
 
 STATEPLANES = []
 
-with fiona.open('/stateplane.geojson',
-                vfs='zip://' + os.path.join(os.path.dirname(__file__), 'data/stateplane.zip')) as src:
+with fiona.open('/', vfs='zip://' + os.path.join(os.path.dirname(__file__), 'data/stateplane.zip')) as src:
     for f in src:
         if f['geometry']['type'] == 'MultiPolygon':
             f['geometry'] = MultiPolygon([Polygon(c[0], c[1:]) for c in f['geometry']['coordinates']])
@@ -20,21 +19,40 @@ with fiona.open('/stateplane.geojson',
         STATEPLANES.append(f)
 
 
-def identify(lon, lat, fmt=None):
-    '''Return stateplane for given X, Y coordinates
-    Defaults to returning EPSG code. Possible fmt parameters: fips, abbr (e.g. 'NY_LI')
-    '''
+def _id(lon, lat, statefp=None):
+    if statefp:
+        stateplanes = [s for s in STATEPLANES if s['properties']['STATEFP'] == str(statefp)]
+
+        if len(stateplanes) == 1:
+            return stateplanes[0]
+
+        elif len(stateplanes) == 0:
+            raise ValueError("SPCS not found for statefp={}".format(statefp))
+
+    else:
+        stateplanes = STATEPLANES
+
     target = Point(lon, lat)
     result = None
 
-    for stateplane in STATEPLANES:
+    for stateplane in stateplanes:
         if stateplane['geometry'].contains(target):
             result = stateplane
             break
 
     if not result:
-        STATEPLANES.sort(key=lambda x: x['geometry'].distance(target))
-        result = STATEPLANES[0]
+        stateplanes.sort(key=lambda x: x['geometry'].distance(target))
+        result = stateplanes[0]
+
+    return result
+
+
+def identify(lon, lat, fmt=None, statefp=None):
+    '''Return stateplane for given X, Y coordinates
+    Defaults to returning EPSG code. Possible fmt parameters: fips, abbr (e.g. 'NY_LI')
+    '''
+
+    result = _id(lon, lat, statefp=statefp)
 
     try:
         if fmt == 'fips':
@@ -49,7 +67,7 @@ def identify(lon, lat, fmt=None):
         else:
             return result['properties']['EPSG']
 
-    except NameError:
+    except TypeError:
         pass
 
 
@@ -60,7 +78,7 @@ class Stateplane(object):
     def __init__(self):
         self.projections = dict()
 
-    def _convert(self, x, y, inverse, epsg=None, fips=None, abbr=None):
+    def _convert(self, x, y, inverse, epsg=None, fips=None, abbr=None, statefp=None):
         '''Conversion helper for state plane conversions'''
         if inverse and not any((epsg, fips, abbr)):
             raise ValueError("Inverse calculations require a epsg, fips or abbr argument.")
@@ -71,7 +89,7 @@ class Stateplane(object):
             epsg = data.SHORT_TO_EPSG[abbr]
 
         if not epsg:
-            epsg = identify(x, y)
+            epsg = identify(x, y, statefp=statefp)
 
         if epsg not in self.projections:
             self.projections[epsg] = pyproj.Proj(init='EPSG:' + epsg)
@@ -80,16 +98,16 @@ class Stateplane(object):
 
         return projection(x, y, inverse=inverse)
 
-    def from_latlon(self, lat, lon, epsg=None, fips=None, abbr=None):
-        return self._convert(lon, lat, None, epsg, fips, abbr)
+    def from_latlon(self, lat, lon, epsg=None, fips=None, abbr=None, statefp=None):
+        return self._convert(lon, lat, None, epsg, fips, abbr, statefp=statefp)
 
-    def from_lonlat(self, lon, lat, epsg=None, fips=None, abbr=None):
+    def from_lonlat(self, lon, lat, epsg=None, fips=None, abbr=None, statefp=None):
         '''Convert from (lon, lat) to local state plane coordinates'''
-        return self._convert(lon, lat, None, epsg, fips, abbr)
+        return self._convert(lon, lat, None, epsg, fips, abbr, statefp=statefp)
 
     def to_latlon(self, easting, northing, epsg=None, fips=None, abbr=None):
         if not any((epsg, fips, abbr)):
-            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")            
+            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")
         lon, lat = self._convert(easting, northing, True, epsg, fips, abbr)
         return lat, lon
 
@@ -98,5 +116,5 @@ class Stateplane(object):
         Must pass either a fips code, epsg, or abbr to specify the state plane projection to use
         '''
         if not any((epsg, fips, abbr)):
-            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")            
+            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")
         return self._convert(easting, northing, True, epsg, fips, abbr)
