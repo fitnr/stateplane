@@ -14,8 +14,9 @@ python:
 
 install:
     # install python requirements
-    - make setup
+    - touch readme.rst
+    - python setup.py install
 
 script:
     # run tests
-    - make test
+    - python setup.py test
