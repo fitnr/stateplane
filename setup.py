@@ -12,7 +12,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='stateplane',
-    version='0.1.0',
+    version='0.1.1',
     description='Convert between state plane projections and long/lat',
     long_description=open('readme.rst').read(),
     keywords='gis usa projection',
