@@ -12,7 +12,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='stateplane',
-    version='0.1.1',
+    version='0.1.2',
     description='Convert between state plane projections and long/lat',
     long_description=open('readme.rst').read(),
     keywords='gis usa projection',
@@ -32,6 +32,11 @@ setup(
     ],
     packages=find_packages(),
     include_package_data=True,
+
+    package_data={
+        'stateplane': ['data/*.zip']
+    },
+
     install_requires=[
         'fiona>=1.4.8,<1.6',
         'pyproj>=1.9.4,<2',
