@@ -21,6 +21,12 @@ stateplane.identify(-88.2, 41.2, 'short')
 stateplane.identify(-88.2, 41.2, 'short', statefp='17')
 # 'IL_E'
 
+# Speed up the process even more by specifying a county FIPS code
+# These two calls are equivalent
+stateplane.identify(None, None, 'short', countyfp='36005')
+stateplane.identify(None, None, 'short', statefp='36', countyfp='005')
+# 'NY_LI'
+
 stateplane.identify(-80.1, 36.2, fmt='short')
 # 'NC'
 
@@ -47,11 +53,12 @@ Functions
 
 ### stateplane.identify(lon, lat, fmt=None, statefp=None)
 
-### from_latlon(lat, lon, epsg=None, fips=None, abbr=None, statefp=None)
-### from_lonlat(lon, lat, epsg=None, fips=None, abbr=None, statefp=None)
+### from_latlon(lat, lon, epsg=None, fips=None, abbr=None, statefp=None, countyfp=None)
+### from_lonlat(lon, lat, epsg=None, fips=None, abbr=None, statefp=None, countyfp=None)
 
 For these functions, `epsg`, `fips` or `abbr` can be used to specify a projection.
-The `statefp` parameter can be used to specify a state (or territory), while results in more efficient checking.
+The `statefp` parameter can be used to specify a two-digit state (or territory) FIPS code, while results in more efficient checking.
+Use `countyfp` to specify a five-digit county FIPS code. Or, in combination with `statefp`, use the three-digit county stem.
 
 ### to_latlon(easting, northing, epsg=None, fips=None, abbr=None)
 ### to_lonlat(easting, northing, epsg=None, fips=None, abbr=None)

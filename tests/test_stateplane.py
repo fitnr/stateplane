@@ -44,6 +44,13 @@ class TestCase(unittest.TestCase):
             stateplane.to_latlon(817080.8169336573, 99364.28495057777)
             stateplane.to_lonlat(817080.8169336573, 99364.28495057777)
 
+    def test_get_co(self):
+        assert stateplane.stateplane._get_co('01001') == '26930'
+        assert stateplane.stateplane._get_co('72123') == '32161'
+
+    def test_identify_with_countyfp(self):
+        assert 'NY_LI' == stateplane.identify(None, None, fmt='short', statefp='36', countyfp='005')
+        assert 'NY_LI' == stateplane.identify(None, None, fmt='short', countyfp='36005')
 
     def test_identify(self):
         assert 'NY_LI' == stateplane.identify(-73.604107, 40.750638, fmt='short')

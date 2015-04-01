@@ -1,4 +1,6 @@
 import os.path
+from csv import reader
+from pkg_resources import resource_stream
 import pyproj
 from shapely.geometry.polygon import Polygon
 from shapely.geometry.multipolygon import MultiPolygon
@@ -18,19 +20,48 @@ with fiona.open('/', vfs='zip://' + os.path.join(os.path.dirname(__file__), 'dat
 
         STATEPLANES.append(f)
 
+COFIPS = dict()
 
-def _id(lon, lat, statefp=None):
-    if statefp:
+
+def _cofips():
+    global COFIPS
+    with resource_stream('stateplane', 'data/countyfp.csv') as rs:
+        r = reader(rs, delimiter=',')
+        next(r)
+        COFIPS = {fp: epsg for fp, epsg in r}
+
+
+def _get_co(countyfp, statefp=None):
+    if statefp and len(countyfp) == 3:
+        countyfp = statefp + countyfp
+
+    if not len(COFIPS):
+        _cofips()
+
+    try:
+        return COFIPS[countyfp]
+    except KeyError:
+        # Guess the countyfp didn't work
+        pass
+
+
+def _id(lon, lat, statefp=None, countyfp=None):
+    if countyfp:
+        epsgmatch = _get_co(countyfp, statefp)
+        if epsgmatch:
+            stateplanes = [s for s in STATEPLANES if s['properties']['EPSG'] == epsgmatch]
+
+    elif statefp:
         stateplanes = [s for s in STATEPLANES if s['properties']['STATEFP'] == str(statefp)]
-
-        if len(stateplanes) == 1:
-            return stateplanes[0]
-
-        elif len(stateplanes) == 0:
-            raise ValueError("SPCS not found for statefp={}".format(statefp))
 
     else:
         stateplanes = STATEPLANES
+
+    if len(stateplanes) == 1:
+        return stateplanes[0]
+
+    elif len(stateplanes) == 0:
+        raise ValueError("SPCS not found for statefp={}".format(statefp))
 
     target = Point(lon, lat)
     result = None
@@ -47,12 +78,12 @@ def _id(lon, lat, statefp=None):
     return result
 
 
-def identify(lon, lat, fmt=None, statefp=None):
+def identify(lon, lat, fmt=None, statefp=None, countyfp=None):
     '''Return stateplane for given X, Y coordinates
     Defaults to returning EPSG code. Possible fmt parameters: fips, abbr (e.g. 'NY_LI')
     '''
 
-    result = _id(lon, lat, statefp=statefp)
+    result = _id(lon, lat, statefp=statefp, countyfp=countyfp)
 
     try:
         if fmt == 'fips':
