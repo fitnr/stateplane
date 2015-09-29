@@ -10,11 +10,16 @@
 
 from setuptools import setup, find_packages
 
+try:
+    readme = open('readme.rst').read()
+except IOError:
+    readme = open('readme.md').read()
+
 setup(
     name='stateplane',
     version='0.2.1',
     description='Convert between state plane projections and long/lat',
-    long_description=open('readme.rst').read(),
+    long_description=readme,
     keywords='gis usa projection',
     author='Neil Freeman',
     author_email='contact@fakeisthenewreal.org',
@@ -43,10 +48,7 @@ setup(
         'shapely>=1.5.1,<1.6',
     ],
     test_suite='tests',
-    tests_require=[
-        'coverage',
-        'tox',
-    ],
+
     entry_points={
         'console_scripts': [
             'stateplane=stateplane.cli:main',
