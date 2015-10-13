@@ -12,8 +12,8 @@ stateplane/data/stateplane.zip: stateplane/data/stateplane.geojson
 .PHONY: deploy
 deploy: README.rst
 	rm -r dist
-	python setup.py sdist
 	python3 setup.py sdist bdist_wheel
+	python setup.py sdist
 	twine upload dist/*
 	git push
 	git push --tags
