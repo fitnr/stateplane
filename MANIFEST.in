@@ -1,3 +1,2 @@
-include readme.rst
 recursive-include stateplane *.zip
 exclude */.DS_Store

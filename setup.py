@@ -11,13 +11,13 @@
 from setuptools import setup, find_packages
 
 try:
-    readme = open('readme.rst').read()
+    readme = open('README.rst').read()
 except IOError:
-    readme = open('readme.md').read()
+    readme = ''
 
 setup(
     name='stateplane',
-    version='0.2.2',
+    version='0.2.3',
     description='Convert between state plane projections and long/lat',
     long_description=readme,
     keywords='gis usa projection',
@@ -43,7 +43,7 @@ setup(
     },
 
     install_requires=[
-        'fiona>=1.4.8,<1.6',
+        'fiona>=1.4.8,<=1.6.2',
         'pyproj>=1.9.4,<2',
         'shapely>=1.5.1,<1.6',
     ],
