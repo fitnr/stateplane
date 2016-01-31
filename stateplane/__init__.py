@@ -8,9 +8,9 @@
 # http://http://opensource.org/licenses/GPL-3.0
 # Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
 
-__version__ = '0.2.3.post2'
-
 from . import stateplane
+
+__version__ = '0.2.4'
 
 identify = stateplane.identify
 
