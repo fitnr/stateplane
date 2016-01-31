@@ -27,8 +27,15 @@ class TestCase(unittest.TestCase):
         assert hasattr(stateplane, 'identify')
 
     def test_fromlatlon(self):
-        assert stateplane.from_lonlat(-75.2, 40.2) == (817080.8169336573, 99364.28495057777)
-        assert stateplane.from_latlon(40.2, -75.2) == (817080.8169336573, 99364.28495057777)
+        result = stateplane.from_lonlat(-75.2, 40.2)
+        fixture = (817080.8169336573, 99364.28495057777)
+        for a in zip(result, fixture):
+            self.assertAlmostEqual(*a)
+
+        result = stateplane.from_latlon(40.2, -75.2)
+        fixture = (817080.8169336573, 99364.28495057777)
+        for a in zip(result, fixture):
+            self.assertAlmostEqual(*a)
 
     def test_tolonlat(self):
         x, y = stateplane.to_lonlat(817080.8169336573, 99364.28495057777, epsg='32129')
