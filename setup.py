@@ -43,7 +43,7 @@ setup(
     },
 
     install_requires=[
-        'fiona>=1.4.8,<=1.6.2',
+        'fiona>=1.4.8,<=2',
         'pyproj>=1.9.4,<2',
         'shapely>=1.5.1,<1.6',
     ],
