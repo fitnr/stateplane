@@ -18,6 +18,7 @@ sudo: true
 before_install:
     - sudo apt-get -qq update
     - sudo apt-get -qq install -y libgdal1-dev
+    - pip install docutils
 
 install:
     - make install
