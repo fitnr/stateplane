@@ -1,6 +1,7 @@
 README.rst: README.md
-	pandoc $< -o $@ || touch $@
-	python setup.py check --restructuredtext --strict
+	- pandoc $< -o $@
+	@touch $@
+	- python setup.py check --restructuredtext --strict
 
 .PHONY: install test
 install: README.rst stateplane/data/stateplane.zip
