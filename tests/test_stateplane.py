@@ -66,7 +66,12 @@ class TestCase(unittest.TestCase):
         assert stateplane.identify(-75.2, 40.2, fmt='short') == 'PA_S'
         assert stateplane.identify(-75.2, 40.2) == '32129'
 
-        assert stateplane.identify(-80.1, 36.2, fmt='proj4') == "+proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334 +lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+        fixture = (
+            "+proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334 "
+            "+lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +ellps=GRS80 "
+            "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+        )
+        self.assertEqual(stateplane.identify(-80.1, 36.2, fmt='proj4').strip(), fixture)
 
         self.assertEqual(stateplane.identify(-80.1, 36.2, fmt='FOOBAR'), '32119')
 

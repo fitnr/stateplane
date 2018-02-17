@@ -52,7 +52,7 @@ Installing
 --------
 Assuming you have [pip](https://pip.pypa.io/en/stable/), run:
 ````
-pip install pyproj
+pip install stateplane
 ````
 
 Or, download the repository and run:

@@ -1,2 +1,3 @@
-recursive-include stateplane *.zip
+include stateplane/data/*.geojson
+include stateplane/data/*.csv
 exclude */.DS_Store

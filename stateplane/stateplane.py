@@ -1,34 +1,36 @@
 import os.path
 from csv import reader
+from json import loads
+from osgeo import ogr, osr
 import pyproj
-from shapely.geometry.polygon import Polygon
-from shapely.geometry.multipolygon import MultiPolygon
+from shapely.geometry import shape
 from shapely.geometry.point import Point
-import fiona
 from . import dicts
 
-STATEPLANES = []
+GEOJSON = os.path.join(os.path.dirname(__file__), 'data/stateplane.geojson')
+CSV = os.path.join(os.path.dirname(__file__), 'data/countyfp.csv')
 
-with fiona.open('/', vfs='zip://' + os.path.join(os.path.dirname(__file__), 'data/stateplane.zip')) as src:
-    for f in src:
-        if f['geometry']['type'] == 'MultiPolygon':
-            f['geometry'] = MultiPolygon([Polygon(c[0], c[1:]) for c in f['geometry']['coordinates']])
+def _load_boundaries():
+    features = []
+    src = ogr.Open(GEOJSON, 0)
+    layer = src.GetLayer()
+    for n in range(layer.GetFeatureCount()):
+        f = loads(layer.GetFeature(n).ExportToJson())
+        f['geometry'] = shape(f['geometry'])
+        features.append(f)
 
-        elif f['geometry']['type'] == 'Polygon':
-            f['geometry'] = Polygon(f['geometry']['coordinates'][0], f['geometry']['coordinates'][1:])
-
-        STATEPLANES.append(f)
-
-COFIPS = dict()
-
+    del src
+    return features
 
 def _cofips():
-    global COFIPS
-    with open(os.path.join(os.path.dirname(__file__), 'data/countyfp.csv')) as rs:
+    with open(CSV) as rs:
         r = reader(rs, delimiter=',')
         next(r)
-        COFIPS = {fp: epsg for fp, epsg in r}
+        return {fp: epsg for fp, epsg in r}
 
+
+STATEPLANES = _load_boundaries()
+COFIPS = _cofips()
 
 def _get_co(countyfp, statefp=None):
     if statefp and len(countyfp) == 3:
@@ -92,7 +94,9 @@ def identify(lon, lat, fmt=None, statefp=None, countyfp=None):
             return result['properties']['ZONENAME83']
 
         elif fmt == 'proj4':
-            return dicts.EPSG_TO_PROJ4[result['properties']['EPSG']]
+            sr = osr.SpatialReference()
+            sr.ImportFromEPSG(int(result['properties']['EPSG']))
+            return sr.ExportToProj4()
 
         else:
             return result['properties']['EPSG']
@@ -136,9 +140,7 @@ class Stateplane(object):
         return self._convert(lon, lat, None, epsg, fips, abbr, statefp=statefp)
 
     def to_latlon(self, easting, northing, epsg=None, fips=None, abbr=None):
-        if not any((epsg, fips, abbr)):
-            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")
-        lon, lat = self._convert(easting, northing, True, epsg, fips, abbr)
+        lon, lat = self.to_lonlat(easting, northing, epsg, fips, abbr)
         return lat, lon
 
     def to_lonlat(self, easting, northing, epsg=None, fips=None, abbr=None):

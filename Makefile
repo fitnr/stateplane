@@ -6,10 +6,6 @@ README.rst: README.md
 install: README.rst stateplane/data/stateplane.zip
 	python setup.py --quiet install
 
-stateplane/data/stateplane.zip: stateplane/data/stateplane.geojson
-	rm -f $@
-	zip -j $@ $<
-
 .PHONY: deploy
 deploy: README.rst | clean
 	python3 setup.py sdist bdist_wheel
