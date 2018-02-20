@@ -17,7 +17,7 @@ except IOError:
 
 setup(
     name='stateplane',
-    version='0.2.4',
+    version='0.3.0',
     description='Convert between state plane projections and long/lat',
     long_description=readme,
     keywords='gis usa projection',
