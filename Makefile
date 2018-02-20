@@ -4,7 +4,7 @@ README.rst: README.md
 	- python setup.py check --restructuredtext --strict
 
 .PHONY: install test
-install: README.rst stateplane/data/stateplane.zip
+install: README.rst
 	python setup.py --quiet install
 
 .PHONY: deploy
