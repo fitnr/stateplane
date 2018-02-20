@@ -45,6 +45,7 @@ setup(
     install_requires=[
         'pyproj>=1.9.4,<2',
         'shapely>=1.5.1,<1.6',
+        'gdal>=2.0,<2.3',
     ],
     test_suite='tests',
 
