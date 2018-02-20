@@ -17,7 +17,7 @@ sudo: true
 
 before_install:
     - sudo apt-get -qq update
-    - sudo apt-get -qq install -y libgdal1-dev
+    - sudo apt-get -qq install -y gdal-bin python-gdal
     - pip install docutils
 
 install:
