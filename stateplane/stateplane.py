@@ -36,7 +36,7 @@ def _get_co(countyfp, statefp=None):
     if statefp and len(countyfp) == 3:
         countyfp = statefp + countyfp
 
-    if not len(COFIPS):
+    if not COFIPS:
         _cofips()
 
     try:
@@ -47,6 +47,7 @@ def _get_co(countyfp, statefp=None):
 
 
 def _id(lon, lat, statefp=None, countyfp=None):
+    stateplanes = None
     if countyfp:
         epsgmatch = _get_co(countyfp, statefp)
         if epsgmatch:
@@ -58,11 +59,11 @@ def _id(lon, lat, statefp=None, countyfp=None):
     else:
         stateplanes = STATEPLANES
 
+    if not stateplanes:
+        raise ValueError("SPCS not found for statefp={}".format(statefp))
+
     if len(stateplanes) == 1:
         return stateplanes[0]
-
-    elif len(stateplanes) == 0:
-        raise ValueError("SPCS not found for statefp={}".format(statefp))
 
     target = Point(lon, lat)
     result = None
