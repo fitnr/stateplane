@@ -8,17 +8,21 @@
 language: python
 
 python:
+    - 2.7
     - 3.6
     - 3.7
     - 3.8
+
+matrix:
+    allow_failures:
+        - python: 2.7
 
 sudo: true
 
 before_install:
     - sudo add-apt-repository --yes ppa:ubuntugis/ppa
     - sudo apt-get -qq update
-    - sudo apt-get remove -y gdal-bin python-gdal python3-gdal
-    - sudo apt-get -qq install -y gdal-bin python-gdal python3-gdal
+    - sudo apt-get -qq install -y gdal-bin python-gdal python3-gdal libgdal-dev
     - pip install docutils
 
 install:
