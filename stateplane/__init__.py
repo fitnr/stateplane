@@ -10,7 +10,7 @@
 
 from . import stateplane
 
-__version__ = '0.3.1'
+__version__ = '0.4.0'
 
 identify = stateplane.identify
 
