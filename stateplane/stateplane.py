@@ -10,6 +10,7 @@ from . import dicts
 GEOJSON = os.path.join(os.path.dirname(__file__), 'data/stateplane.geojson')
 CSV = os.path.join(os.path.dirname(__file__), 'data/countyfp.csv')
 
+
 def _load_boundaries():
     features = []
     src = ogr.Open(GEOJSON, 0)
@@ -22,6 +23,7 @@ def _load_boundaries():
     del src
     return features
 
+
 def _cofips():
     with open(CSV) as rs:
         r = reader(rs, delimiter=',')
@@ -31,6 +33,7 @@ def _cofips():
 
 STATEPLANES = _load_boundaries()
 COFIPS = _cofips()
+
 
 def _get_co(countyfp, statefp=None):
     if statefp and len(countyfp) == 3:
@@ -84,23 +87,21 @@ def identify(lon, lat, fmt=None, statefp=None, countyfp=None):
     '''Return stateplane for given X, Y coordinates
     Defaults to returning EPSG code. Possible fmt parameters: fips, abbr (e.g. 'NY_LI')
     '''
-
     result = _id(lon, lat, statefp=statefp, countyfp=countyfp)
 
     try:
         if fmt == 'fips':
             return result['properties']['FIPSZONE83']
 
-        elif fmt == 'short':
+        if fmt == 'short':
             return result['properties']['ZONENAME83']
 
-        elif fmt == 'proj4':
+        if fmt == 'proj4':
             sr = osr.SpatialReference()
             sr.ImportFromEPSG(int(result['properties']['EPSG']))
             return sr.ExportToProj4()
 
-        else:
-            return result['properties']['EPSG']
+        return result['properties']['EPSG']
 
     except TypeError:
         pass

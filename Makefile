@@ -10,7 +10,7 @@ install: README.rst
 .PHONY: deploy
 deploy: README.rst | clean
 	python3 setup.py sdist bdist_wheel
-	rm -r build
+	rm -fr build
 	python setup.py sdist
 	twine upload dist/*
 	git push
@@ -23,4 +23,4 @@ test:
 	stateplane -78 36 -o epsg
 	stateplane -77 46 -o short
 
-clean:; rm -r build dist
+clean:; rm -fr build dist

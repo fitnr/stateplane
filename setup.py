@@ -11,7 +11,7 @@
 from setuptools import setup, find_packages
 
 try:
-    readme = open('README.rst').read()
+    readme = open('README.md').read()
 except IOError:
     readme = ''
 
@@ -20,6 +20,7 @@ setup(
     version='0.3.1',
     description='Convert between state plane projections and long/lat',
     long_description=readme,
+    long_description_content_type='text/markdown',
     keywords='gis usa projection',
     author='Neil Freeman',
     author_email='contact@fakeisthenewreal.org',
@@ -31,7 +32,9 @@ setup(
         'Natural Language :: English',
         'Operating System :: Unix',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Operating System :: OS Independent',
     ],
@@ -43,9 +46,9 @@ setup(
     },
 
     install_requires=[
-        'pyproj>=1.9.4,<2',
-        'shapely>=1.5.1,<1.6',
-        'gdal>=2.0,<2.3',
+        'pyproj',
+        'shapely',
+        'gdal',
     ],
     test_suite='tests',
 
