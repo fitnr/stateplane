@@ -9,4 +9,3 @@
 # Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
 
 from . import test_stateplane
-

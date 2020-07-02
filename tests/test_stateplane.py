@@ -29,12 +29,12 @@ class TestCase(unittest.TestCase):
 
     def test_fromlatlon(self):
         result = stateplane.from_lonlat(-75.2, 40.2)
-        fixture = (817080.8169336573, 99364.28495057777)
+        fixture = (817080.8169336573, 99364.28505383375)
         for a in zip(result, fixture):
             self.assertAlmostEqual(*a, 5)
 
         result = stateplane.from_latlon(40.2, -75.2)
-        fixture = (817080.8169336573, 99364.28495057777)
+        fixture = (817080.8169336573, 99364.28505383375)
         for a in zip(result, fixture):
             self.assertAlmostEqual(*a, 5)
 
@@ -73,7 +73,6 @@ class TestCase(unittest.TestCase):
             "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
         )
         self.assertEqual(stateplane.identify(-80.1, 36.2, fmt='proj4').strip(), fixture)
-
         self.assertEqual(stateplane.identify(-80.1, 36.2, fmt='FOOBAR'), '32119')
 
     def test_inverting(self):
