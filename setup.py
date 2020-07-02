@@ -17,7 +17,7 @@ except IOError:
 
 setup(
     name='stateplane',
-    version='0.3.1',
+    version='0.4.0',
     description='Convert between state plane projections and long/lat',
     long_description=readme,
     long_description_content_type='text/markdown',
@@ -31,7 +31,6 @@ setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -46,7 +45,7 @@ setup(
     },
 
     install_requires=[
-        'pyproj',
+        'pyproj>=2.4.2',
         'shapely',
         'GDAL',
     ],

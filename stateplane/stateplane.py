@@ -128,7 +128,7 @@ class Stateplane(object):
             epsg = identify(x, y, statefp=statefp)
 
         if epsg not in self.projections:
-            self.projections[epsg] = pyproj.Proj(init='EPSG:' + epsg)
+            self.projections[epsg] = pyproj.Proj('EPSG:' + epsg)
 
         projection = self.projections[epsg]
 
