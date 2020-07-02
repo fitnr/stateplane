@@ -1,5 +1,4 @@
-pystateplane
-------------
+# pystateplane
 
 Get the local state plane projection for geographica coordinates, and automatically convert between coordinates and the local state plane projection.
 
@@ -48,20 +47,19 @@ stateplane.identify(-75.2, 40.2, fmt='short')
 'PA_S'
 ````
 
-Installing
---------
+## Installing
+
 Assuming you have [pip](https://pip.pypa.io/en/stable/), run:
-````
+````bash
 pip install stateplane
 ````
 
 Or, download the repository and run:
-````
+````bash
 python setup.py install
 ````
 
-Functions
---------
+## Functions
 
 #### stateplane.identify(lon, lat, fmt=None, statefp=None)
 
@@ -77,7 +75,6 @@ Use `countyfp` to specify a five-digit county FIPS code. Or, in combination with
 
 For these functions, as least one of `epsg`, `fips` and `abbr` must be provided.
 
-Caveats
----------
+## Caveats
 
 This module is really just a convenience wrapper for the excellent `pyproj` library. Big speed gains could be achieved by doing the conversions natively. Pull requests are gladly accepted.

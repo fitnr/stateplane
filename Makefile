@@ -1,10 +1,5 @@
-README.rst: README.md
-	- pandoc $< -o $@
-	@touch $@
-	- python setup.py check --restructuredtext --strict
-
 .PHONY: install test
-install: README.rst
+install:
 	python setup.py --quiet install
 
 .PHONY: deploy
