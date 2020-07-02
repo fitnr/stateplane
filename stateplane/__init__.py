@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # This file is part of stateplane.
-# https://github.com/someuser/somepackage
+# https://github.com/fitnr/stateplane
 
 # Licensed under the GPLv3 license:
 # http://http://opensource.org/licenses/GPL-3.0
