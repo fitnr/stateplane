@@ -26,6 +26,7 @@ before_install:
     - pip install docutils
 
 install:
+    - gdal-config --version
     - make install
 
 script:

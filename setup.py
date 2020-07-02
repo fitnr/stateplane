@@ -48,7 +48,7 @@ setup(
     install_requires=[
         'pyproj',
         'shapely',
-        'gdal',
+        'GDAL',
     ],
     test_suite='tests',
 

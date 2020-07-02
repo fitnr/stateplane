@@ -1,6 +1,6 @@
 .PHONY: install test
 install:
-	python setup.py --quiet install
+	python setup.py install
 
 .PHONY: deploy
 deploy: README.rst | clean
