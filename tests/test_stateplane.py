@@ -53,8 +53,9 @@ class TestCase(unittest.TestCase):
             stateplane.to_lonlat(817080.8169336573, 99364.28495057777)
 
     def test_get_co(self):
-        self.assertEqual(stateplane.stateplane._get_co('01001'), '26930')
-        self.assertEqual(stateplane.stateplane._get_co('72123'), '32161')
+        sp = stateplane.stateplane.Stateplane()
+        self.assertEqual(sp._get_co('01001'), '26930')
+        self.assertEqual(sp._get_co('72123'), '32161')
 
     def test_identify_with_countyfp(self):
         self.assertEqual('NY_LI', stateplane.identify(None, None, fmt='short', statefp='36', countyfp='005'))
@@ -66,13 +67,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual('3200', stateplane.identify(-80.1, 36.2, fmt='fips'))
         self.assertEqual(stateplane.identify(-75.2, 40.2, fmt='short'), 'PA_S')
         self.assertEqual(stateplane.identify(-75.2, 40.2), '32129')
-
-        fixture = (
-            "+proj=lcc +lat_1=36.16666666666666 +lat_2=34.33333333333334 "
-            "+lat_0=33.75 +lon_0=-79 +x_0=609601.22 +y_0=0 +ellps=GRS80 "
-            "+towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
-        )
-        self.assertEqual(stateplane.identify(-80.1, 36.2, fmt='proj4').strip(), fixture)
         self.assertEqual(stateplane.identify(-80.1, 36.2, fmt='FOOBAR'), '32119')
 
     def test_inverting(self):
@@ -88,3 +82,6 @@ class TestCase(unittest.TestCase):
         self.assertEqual('26943', stateplane.identify(-121.986361, 37.524384999999995, statefp='06'))
         self.assertEqual('26957', stateplane.identify(0, 0, statefp='10'))
         self.assertRaises(ValueError, stateplane.identify, -121, 35.7, statefp='KK')
+
+if __name__ == '__main__':
+    unittest.main()

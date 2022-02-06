@@ -12,9 +12,8 @@ deploy: README.rst | clean
 	git push --tags
 
 test:
-	python setup.py test
+	python -m unittest
 	stateplane -73 46
-	stateplane -74 42 -o proj4
 	stateplane -78 36 -o epsg
 	stateplane -77 46 -o short
 
