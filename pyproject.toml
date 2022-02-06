@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=60.5.0", "wheel"]
+build-backend = 'setuptools.build_meta'
+
+[tool.black]
+line-length = 120
+target-version = ["py39"]
+include = 'py$'
+skip-string-normalization = true
+
+[tool.pylint.master]
+fail-under = "8.77"
+
+[tool.pylint.messages_control]
+disable = [
+    "invalid-name",
+    "duplicate-code"
+]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.isort]
+line_length = 120
+
+[tool.coverage.run]
+omit = ["tests"]
+branch = true
+source = ["src/stateplane"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "except ImportError:",
+]
