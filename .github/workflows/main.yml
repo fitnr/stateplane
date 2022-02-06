@@ -1,0 +1,40 @@
+# This file is part of stateplane.
+# https://github.com/fitnr/stateplane
+
+# Licensed under the GPLv3 license:
+# http://http://opensource.org/licenses/GPL-3.0
+# Copyright (c) 2015-22, Neil Freeman <contact@fakeisthenewreal.org>
+
+on: [push]
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+          cache-dependency-path: setup.cfg
+
+      - name: Install GDAL
+        run: |
+          sudo apt-get -q update
+          sudo apt-get -q install -y libgdal-dev
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip
+
+      - name: Install package
+        run: python -m pip install .
+
+      - name: Run Python tests
+        run: make test
+

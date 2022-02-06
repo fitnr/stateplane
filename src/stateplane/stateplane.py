@@ -22,15 +22,15 @@ except ImportError:
 
 
 def _load_boundaries():
-    with resources.open_binary('stateplane', 'stateplane.geojson') as f:
+    with resources.open_binary("stateplane", "stateplane.geojson") as f:
         geojson = json.load(f)
-        for feature in geojson['features']:
-            feature['geometry'] = shape(feature['geometry'])
+        for feature in geojson["features"]:
+            feature["geometry"] = shape(feature["geometry"])
             yield feature
 
 
 def _cofips():
-    with resources.open_text('stateplane', 'countyfp.csv') as rs:
+    with resources.open_text("stateplane", "countyfp.csv") as rs:
         r = reader(rs, delimiter=",")
         next(r)
         return {fp: epsg for fp, epsg in r}

@@ -1,0 +1,35 @@
+# This file is part of stateplane.
+# https://github.com/fitnr/stateplane
+
+# Licensed under the GPLv3 license:
+# http://http://opensource.org/licenses/GPL-3.0
+# Copyright (c) 2015-22, Neil Freeman <contact@fakeisthenewreal.org>
+name: Release
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+          cache: 'pip'
+          cache-dependency-path: setup.cfg
+
+      - name: Install build requirements
+        run: |
+          python -m pip install -U pip twine
+          pip install .
+
+      - name: Publish package
+        run: make publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
