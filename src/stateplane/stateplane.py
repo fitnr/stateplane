@@ -10,6 +10,7 @@ import os.path
 from csv import reader
 
 import pyproj
+from pyproj.enums import TransformDirection
 from shapely.geometry import shape
 from shapely.geometry.point import Point
 
@@ -41,7 +42,7 @@ class Stateplane(object):
     """Stateplane class for doing many conversions"""
 
     def __init__(self):
-        self.projections = dict()
+        self.transformers = dict()
         self.STATEPLANES = list(_load_boundaries())
         self.COFIPS = _cofips()
 
@@ -88,29 +89,23 @@ class Stateplane(object):
 
         return result
 
-    def _convert(self, x, y, inverse, epsg=None, fips=None, abbr=None, statefp=None):
-        """Conversion helper for state plane conversions"""
-        if inverse and not any((epsg, fips, abbr)):
-            raise ValueError("Inverse calculations require a epsg, fips or abbr argument.")
-
+    def get_transformer(self, x, y, epsg=None, fips=None, abbr=None, statefp=None):
         if fips:
             epsg = dicts.FIPS_TO_EPSG[fips]
+
         elif abbr:
             epsg = dicts.SHORT_TO_EPSG[abbr]
 
         if not epsg:
             epsg = self.identify(x, y, statefp=statefp)
 
-        if epsg not in self.projections:
-            self.projections[epsg] = pyproj.Proj("EPSG:" + epsg)
+        if epsg not in self.transformers:
+            self.transformers[epsg] = pyproj.Transformer.from_crs(pyproj.CRS(int(epsg)), 4326)
 
-        projection = self.projections[epsg]
-
-        return projection(x, y, inverse=inverse)
+        return self.transformers[epsg]
 
     def identify(self, lon, lat, fmt=None, statefp=None, countyfp=None):
         """Return stateplane for given X, Y coordinates
-        Returns a pyproj.CRS object
         Defaults to returning EPSG code. Other possible fmt parameters:
         - fips
         - short (e.g. 'NY_LI')
@@ -130,20 +125,23 @@ class Stateplane(object):
             pass
 
     def from_latlon(self, lat, lon, epsg=None, fips=None, abbr=None, statefp=None):
-        return self._convert(lon, lat, None, epsg, fips, abbr, statefp=statefp)
+        """Convert from (lat, lon) to local state plane coordinates"""
+        t = self.get_transformer(lon, lat, epsg, fips, abbr, statefp)
+        return t.transform(lat, lon, direction=TransformDirection.INVERSE)
 
     def from_lonlat(self, lon, lat, epsg=None, fips=None, abbr=None, statefp=None):
         """Convert from (lon, lat) to local state plane coordinates"""
-        return self._convert(lon, lat, None, epsg, fips, abbr, statefp=statefp)
+        return self.from_latlon(lat, lon, epsg, fips, abbr, statefp)
 
     def to_latlon(self, easting, northing, epsg=None, fips=None, abbr=None):
-        lon, lat = self.to_lonlat(easting, northing, epsg, fips, abbr)
-        return lat, lon
+        if not any((epsg, fips, abbr)):
+            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")
+        t = self.get_transformer(easting, northing, epsg=epsg, fips=fips, abbr=abbr)
+        return t.transform(easting, northing)
 
     def to_lonlat(self, easting, northing, epsg=None, fips=None, abbr=None):
         """Return (lon, lat) from a state plane (easting, northing) pair.
         Must pass either a fips code, epsg, or abbr to specify the state plane projection to use
         """
-        if not any((epsg, fips, abbr)):
-            raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")
-        return self._convert(easting, northing, True, epsg, fips, abbr)
+        lat, lon = self.to_latlon(easting, northing, epsg, fips, abbr)
+        return lon, lat
