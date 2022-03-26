@@ -11,8 +11,11 @@ SHELL := /bin/bash
 install:
 	python -m pip install .
 
+cover: | test
+	coverage report --fail-under 80
+
 test:
-	python -m unittest
+	coverage run -m unittest
 	stateplane -73 46
 	stateplane -78 36 -o epsg
 	stateplane -77 46 -o short

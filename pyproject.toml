@@ -36,6 +36,7 @@ testing = [
 [build-system]
 requires = ["setuptools>=61.1.1", "wheel"]
 build-backend = "setuptools.build_meta"
+
 [tool.setuptools]
 zip-safe = true
 package-dir = {"" = "src"}
@@ -44,12 +45,12 @@ include-package-data = true
 package-data = {stateplane = ["*.zip", "*.csv", "*.geojson"]}
 
 [project.scripts]
-stateplane = "stateplane.cli:main"
+stateplane = "stateplane.__main__:main"
 
 [tool.black]
 line-length = 120
 target-version = ["py39"]
-include = 'py$'
+include = "py$"
 
 [tool.pylint.master]
 fail-under = "8.77"
@@ -69,7 +70,7 @@ line_length = 120
 [tool.coverage.run]
 omit = ["tests"]
 branch = true
-source = ["src/stateplane"]
+source = ["stateplane"]
 
 [tool.coverage.report]
 exclude_lines = [

@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 # This file is part of stateplane.
@@ -13,6 +12,7 @@ import unittest
 from random import uniform
 import pyproj
 import stateplane
+from stateplane import dicts
 from stateplane.stateplane import Stateplane
 
 
@@ -84,8 +84,11 @@ class TestCase(unittest.TestCase):
             self.sp.to_lonlat(self.easting, self.northing)
 
     def test_get_co(self):
+        """Spot check counties"""
         self.assertEqual(self.sp._get_co('01001'), '26930')
         self.assertEqual(self.sp._get_co('72123'), '32161')
+        self.assertEqual(self.sp._get_co("46102"), "32135")
+        self.assertEqual(dicts.STATEFP_TO_EPSG["46"], ("32135", "32134"))
 
     def test_identify_with_countyfp(self):
         self.assertEqual('NY_LI', stateplane.identify(None, None, fmt='short', statefp='36', countyfp='005'))

@@ -33,8 +33,7 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install package
-        run: python -m pip install .
+        run: python -m pip install .[testing]
 
-      - name: Run Python tests
-        run: make test
-
+      - name: Run Python tests, including coverage
+        run: make cover
