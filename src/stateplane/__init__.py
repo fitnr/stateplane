@@ -4,7 +4,7 @@
 # Licensed under the GPLv3 license:
 # http://http://opensource.org/licenses/GPL-3.0
 # Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
-
+"""Find the state plane projection for a point or locale"""
 from . import stateplane
 
 __version__ = "0.5.0"

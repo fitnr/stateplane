@@ -20,6 +20,9 @@ test:
 	stateplane -78 36 -o epsg
 	stateplane -77 46 -o short
 
+lint:
+	pylint src/stateplane
+
 public: | build
 	twine upload dist/*
 

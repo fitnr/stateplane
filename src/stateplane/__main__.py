@@ -4,12 +4,14 @@
 # Licensed under the GPLv3 license:
 # http://http://opensource.org/licenses/GPL-3.0
 # Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
+"""Stateplane command line tool"""
 import argparse
 
 from . import identify
 
 
 def main():
+    """Stateplane command line tool."""
     parser = argparse.ArgumentParser("stateplane", "Calculate the local state plane projection for a point")
 
     parser.add_argument("point", nargs=2, help="x, y point in WGS84 coordinates", type=float)

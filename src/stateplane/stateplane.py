@@ -4,9 +4,11 @@
 # Licensed under the GPLv3 license:
 # http://http://opensource.org/licenses/GPL-3.0
 # Copyright (c) 2015, Neil Freeman <contact@fakeisthenewreal.org>
-
+"""
+Find the appropriate state plane projection for a geography, as identified
+by a geometric point or code.
+"""
 import json
-import os.path
 from csv import reader
 
 import pyproj
@@ -17,7 +19,7 @@ from shapely.geometry.point import Point
 from . import dicts
 
 try:
-    import importlib.resources as resources
+    from importlib import resources
 except ImportError:
     import importlib_resources as resources
 
@@ -34,15 +36,15 @@ def _cofips():
     with resources.open_text("stateplane", "countyfp.csv") as rs:
         r = reader(rs, delimiter=",")
         next(r)
-        return {fp: epsg for fp, epsg in r}
+        return dict(r)
 
 
-class Stateplane(object):
+class Stateplane:
 
     """Stateplane class for doing many conversions"""
 
     def __init__(self):
-        self.transformers = dict()
+        self.transformers = {}
         self.STATEPLANES = list(_load_boundaries())
         self.COFIPS = _cofips()
 
@@ -54,7 +56,7 @@ class Stateplane(object):
             return self.COFIPS[countyfp]
         except KeyError:
             # Guess the countyfp didn't work
-            pass
+            return None
 
     def _id(self, lon, lat, statefp=None, countyfp=None):
         stateplanes = None
@@ -70,7 +72,7 @@ class Stateplane(object):
             stateplanes = self.STATEPLANES
 
         if not stateplanes:
-            raise ValueError("SPCS not found for statefp={}".format(statefp))
+            raise ValueError(f"SPCS not found for statefp={statefp}")
 
         if len(stateplanes) == 1:
             return stateplanes[0]
@@ -90,6 +92,8 @@ class Stateplane(object):
         return result
 
     def get_transformer(self, x, y, epsg=None, fips=None, abbr=None, statefp=None):
+        """Return a pyproj transformer for a state plane projection specified by the
+        given coordinates."""
         if fips:
             epsg = dicts.FIPS_TO_EPSG[fips]
 
@@ -122,18 +126,19 @@ class Stateplane(object):
             return result["properties"]["EPSG"]
 
         except TypeError:
-            pass
+            return None
 
     def from_latlon(self, lat, lon, epsg=None, fips=None, abbr=None, statefp=None):
-        """Convert from (lat, lon) to local state plane coordinates"""
+        """Convert from (lat, lon) to local state plane coordinates."""
         t = self.get_transformer(lon, lat, epsg, fips, abbr, statefp)
         return t.transform(lat, lon, direction=TransformDirection.INVERSE)
 
     def from_lonlat(self, lon, lat, epsg=None, fips=None, abbr=None, statefp=None):
-        """Convert from (lon, lat) to local state plane coordinates"""
+        """Convert from (lon, lat) to local state plane coordinates."""
         return self.from_latlon(lat, lon, epsg, fips, abbr, statefp)
 
     def to_latlon(self, easting, northing, epsg=None, fips=None, abbr=None):
+        """Convert from state plane to geographic coordinates."""
         if not any((epsg, fips, abbr)):
             raise ValueError("to long/lat calculations require a epsg, fips or abbr argument.")
         t = self.get_transformer(easting, northing, epsg=epsg, fips=fips, abbr=abbr)
@@ -141,7 +146,7 @@ class Stateplane(object):
 
     def to_lonlat(self, easting, northing, epsg=None, fips=None, abbr=None):
         """Return (lon, lat) from a state plane (easting, northing) pair.
-        Must pass either a fips code, epsg, or abbr to specify the state plane projection to use
-        """
+        Must pass either a fips code, epsg, or abbr to specify the state plane
+        projection to use."""
         lat, lon = self.to_latlon(easting, northing, epsg, fips, abbr)
         return lon, lat
