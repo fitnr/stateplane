@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 # This file is part of stateplane.
 # https://github.com/someuser/somepackage
 

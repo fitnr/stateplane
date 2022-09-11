@@ -11,7 +11,7 @@ install: README.rst
 deploy: README.rst | clean
 	python3 setup.py sdist bdist_wheel
 	rm -r build
-	python setup.py sdist
+	python3 setup.py sdist
 	twine upload dist/*
 	git push
 	git push --tags
