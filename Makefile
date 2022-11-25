@@ -23,7 +23,7 @@ test:
 lint:
 	pylint src/stateplane
 
-public: | build
+publish: | build
 	twine upload dist/*
 
 build: | clean
